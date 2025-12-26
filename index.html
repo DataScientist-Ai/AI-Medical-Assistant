@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="ENT Medical Chatbot - Comprehensive guide for ear, nose, and throat conditions, treatments, and diagnostics">
+    <title>ENT Medical Chatbot | Professional ENT Reference Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">🏥</div>
+                <div class="brand-text">
+                    <h1>ENT Medical Assistant</h1>
+                    <p>Comprehensive ENT Knowledge Base</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                Created By Zulkifl Agha , with love for BABA
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Quick Access Card -->
+            <div class="card">
+                <div class="card-header">
+                    <span>📚</span>
+                    Quick Access
+                </div>
+                <div class="quick-access-grid">
+                    <button class="quick-btn" onclick="handleQuickAccess('ear')">
+                        <span class="btn-icon">👂</span>
+                        <span>Ear Conditions</span>
+                    </button>
+                    <button class="quick-btn" onclick="handleQuickAccess('nose')">
+                        <span class="btn-icon">👃</span>
+                        <span>Nose Conditions</span>
+                    </button>
+                    <button class="quick-btn" onclick="handleQuickAccess('throat')">
+                        <span class="btn-icon">🗣️</span>
+                        <span>Throat Conditions</span>
+                    </button>
+                    <button class="quick-btn" onclick="handleQuickAccess('diagnostics')">
+                        <span class="btn-icon">🔬</span>
+                        <span>Diagnostics</span>
+                    </button>
+                    <button class="quick-btn" onclick="handleQuickAccess('medications')">
+                        <span class="btn-icon">💊</span>
+                        <span>Medications</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Card -->
+            <div class="card">
+                <div class="card-header">
+                    <span>🔍</span>
+                    Search ENT Topics
+                </div>
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput"
+                        placeholder="Search diseases, medications..." onkeypress="handleSearchKeypress(event)">
+                </div>
+            </div>
+
+            <!-- Info Card -->
+            <div class="card info-card">
+                <div class="card-header">
+                    <span>ℹ️</span>
+                    About
+                </div>
+                <ul class="info-list">
+                    <li>25+ ENT Conditions</li>
+                    <li>30+ Medications</li>
+                    <li>12+ Diagnostic Procedures</li>
+                    <li>Evidence-based Information</li>
+                    <li>Updated 2024</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Chat Section -->
+        <main class="chat-section">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <span>💬</span>
+                    ENT Consultation Assistant
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span>Online</span>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome Message -->
+                <div class="welcome-message" id="welcomeMessage">
+                    <div class="icon">🏥</div>
+                    <h2>Welcome to ENT Medical Assistant</h2>
+                    <p>Ask me about any ENT condition, medication, or diagnostic procedure</p>
+                    <div class="suggestion-chips">
+                        <div class="chip" onclick="sendMessage('Tell me about otitis media')">Otitis Media</div>
+                        <div class="chip" onclick="sendMessage('What is sinusitis?')">Sinusitis</div>
+                        <div class="chip" onclick="sendMessage('How does audiometry work?')">Audiometry</div>
+                        <div class="chip" onclick="sendMessage('Tell me about amoxicillin')">Amoxicillin</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <textarea class="chat-input" id="chatInput"
+                        placeholder="Ask about ENT conditions, medications, or diagnostics..." rows="1"
+                        onkeypress="handleKeyPress(event)"></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="handleSendMessage()">
+                        <span>Send</span>
+                        <span>📤</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
