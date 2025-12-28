@@ -8,28 +8,24 @@ Your AI-powered ENT Medical Chatbot is almost ready to use!
 
 ## 📋 Next Steps
 
-### 1️⃣ Get Your FREE Google Gemini API Key
+### 1️⃣ Get Your API Keys (Free Tiers Available)
 
-1. **Visit**: [https://makersuite.google.com/app/apikey](https://makersuite.google.com/app/apikey)
-2. **Sign in** with your Google account
-3. **Click** "Create API Key" button
-4. **Copy** your API key (starts with `AIza...`)
+Select the providers you want to use and get your keys:
+- **Google Gemini**: [aistudio.google.com](https://aistudio.google.com/app/apikey)
+- **Groq (Fast)**: [console.groq.com](https://console.groq.com/keys)
+- **xAI (Grok)**: [console.x.ai](https://console.x.ai/)
+- **OpenRouter (DeepSeek/Mistral)**: [openrouter.ai](https://openrouter.ai/keys)
 
-### 2️⃣ Configure the API Key
+### 2️⃣ Configure the App (Strict Security Policy)
 
-The `.env` file should now be open in Notepad. If not, open it manually.
+**No more `.env` editing required for AI keys!** 
 
-**Edit this line:**
-```env
-GEMINI_API_KEY=
-```
+1. **Start the server** (see step 3).
+2. **Open the browser** (see step 4).
+3. **Click the Settings icon (⚙️)** in the top right.
+4. **Paste your API keys** into the corresponding fields.
+5. **Save Settings**. Your keys are stored safely in your browser and never sent to the server's storage.
 
-**Replace with your actual key:**
-```env
-GEMINI_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-```
-
-**Save the file** (Ctrl + S)
 
 ### 3️⃣ Start the Server
 

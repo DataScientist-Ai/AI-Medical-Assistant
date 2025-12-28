@@ -1,16 +1,16 @@
 # 🏥 AI-Powered ENT Medical Chatbot
 
-An intelligent ENT (Ear, Nose, and Throat) medical assistant powered by **Google Gemini AI** with a comprehensive knowledge base covering 25+ conditions, 30+ medications, and 12+ diagnostic procedures.
+ An intelligent medical assistant powered by multiple AI providers (Gemini, Groq, Grok, OpenRouter) providing comprehensive health information.
 
 ## ✨ Features
 
-- 🤖 **AI-Powered Responses**: Uses Google Gemini Pro for intelligent, context-aware conversations
-- 📚 **RAG System**: Retrieval Augmented Generation combines AI with curated ENT knowledge base
-- 💬 **Conversational Memory**: Maintains context across multiple turns
-- 🎯 **Specialized Knowledge**: Comprehensive ENT medical information
-- 🔄 **Fallback System**: Static knowledge base when AI is unavailable
-- 💅 **Modern UI**: Beautiful, responsive design with smooth animations
-- ⚡ **Real-time Responses**: Typing indicators and streaming support
+- 🤖 **Universal AI Support**: Integrated with Google Gemini 2.0, Groq, xAI Grok, and OpenRouter.
+- 🎨 **Model Selector**: Easily switch between different AI models in real-time.
+- 🔒 **Strict Privacy**: All API keys are stored in your browser's local storage—never on the server.
+- 💬 **Conversational Memory**: Maintains context across multiple turns.
+- 🎯 **Specialized Knowledge**: Expert-level medical information with professional citations.
+- 💅 **Modern UI**: Beautiful, responsive design with smooth animations.
+- ⚡ **Real-time Responses**: High-speed inference using optimized providers.
 
 ## 🚀 Quick Start
 
@@ -32,20 +32,14 @@ An intelligent ENT (Ear, Nose, and Throat) medical assistant powered by **Google
    npm install
    ```
 
-3. **Get your Google Gemini API Key**
-   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Sign in with your Google account
-   - Click "Create API Key"
-   - Copy your API key
+3. **Get your API Keys**
+   - **Google Gemini**: [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - **Groq**: [Groq Console](https://console.groq.com/keys)
+   - **xAI Grok**: [xAI Console](https://console.x.ai/)
+   - **OpenRouter**: [OpenRouter](https://openrouter.ai/keys)
 
-4. **Configure environment variables**
-   ```bash
-   # Copy the example file
-   copy .env.example .env
-   
-   # Edit .env and add your API key
-   # GEMINI_API_KEY=your_actual_api_key_here
-   ```
+4. **Configure environment (Optional)**
+   The backend no longer requires API keys in `.env` for security. All keys should be added directly in the application's settings (⚙️).
 
 5. **Start the server**
    ```bash

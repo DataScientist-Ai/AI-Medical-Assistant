@@ -3,6 +3,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Groq = require('groq-sdk');
+const OpenAI = require('openai'); // For xAI and OpenRouter
 const path = require('path');
 
 // Load environment variables
@@ -13,231 +15,229 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(express.static(__dirname));
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize AI Clients
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'fake-key');
+const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
+const xai = process.env.XAI_API_KEY ? new OpenAI({ apiKey: process.env.XAI_API_KEY, baseURL: "https://api.x.ai/v1" }) : null;
+const openrouter = process.env.OPENROUTER_API_KEY ? new OpenAI({
+    apiKey: process.env.OPENROUTER_API_KEY,
+    baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+        "HTTP-Referer": "http://localhost:3000",
+        "X-Title": "Medical AI Assistant"
+    }
+}) : null;
 
-// ENT Knowledge Base (imported from your existing data)
-const entKnowledgeBase = require('./knowledge-base.js');
-
-// System prompt for ENT specialization
-const SYSTEM_PROMPT = `You are an expert ENT (Ear, Nose, and Throat) Medical Assistant AI. Your role is to provide accurate, evidence-based information about ENT conditions, medications, and diagnostic procedures.
+const SYSTEM_PROMPT = `You are an expert General Medical Assistant AI. Your role is to provide detailed, comprehensive, and evidence-based information about various medical conditions, medications, and diagnostic procedures across all medical fields.
 
 IMPORTANT GUIDELINES:
-1. You have access to a comprehensive ENT knowledge base covering diseases, medications, and diagnostics
-2. Always provide accurate medical information based on the knowledge base
-3. Be professional, clear, and concise
-4. Use medical terminology appropriately but explain complex terms
-5. For conditions: discuss symptoms, causes, risk factors, treatments, and prevention
-6. For medications: explain usage, dosage, side effects, contraindications, and interactions
-7. For diagnostics: describe purpose, preparation, procedure, interpretation, and risks
-8. Always remind users to consult healthcare professionals for diagnosis and treatment
-9. If asked about something outside ENT scope, politely redirect to ENT topics
-10. Maintain a helpful, empathetic tone suitable for medical professionals
+1. Provide IN-DEPTH, THOROUGH, and complete medical information. Never truncate your response; always provide a full, terminal conclusion.
+2. CITATIONS REQUIRED: Always provide verifiable medical references or citations for the information provided (e.g., WHO, Mayo Clinic, NIH, PubMed). You MUST include clickable URLs/links for each reference. Include a "References" section at the end of your response with these links.
+3. Be professional, clear, and structured in your responses, using headings and bullet points where appropriate for readability.
+4. Use appropriate medical terminology but explain complex terms for clarity.
+5. For conditions: discuss symptoms, causes, risk factors, potential treatments, and prevention in detail.
+6. For medications: explain usage, common dosages, side effects, contraindications, and potential interactions comprehensively.
+7. For diagnostics: describe the purpose, typical preparation, the procedure itself, interpretation of results, and risks thoroughly.
+8. Maintain a helpful, empathetic, and professional tone at all times.
 
-You are designed to assist medical professionals with quick reference information about ENT conditions.`;
+You are designed to assist medical professionals and the general public with high-quality, referenced medical information.`;
 
-// Function to search knowledge base
-function searchKnowledgeBase(query) {
-    const lowerQuery = query.toLowerCase();
-    const results = {
-        diseases: [],
-        medications: [],
-        diagnostics: []
-    };
-
-    // Search diseases
-    for (const [key, disease] of Object.entries(entKnowledgeBase.diseases)) {
-        if (lowerQuery.includes(disease.name.toLowerCase()) ||
-            lowerQuery.includes(key.toLowerCase())) {
-            results.diseases.push(disease);
-        }
-    }
-
-    // Search medications
-    for (const [key, med] of Object.entries(entKnowledgeBase.medications)) {
-        if (lowerQuery.includes(med.name.toLowerCase()) ||
-            lowerQuery.includes(key.toLowerCase())) {
-            results.medications.push(med);
-        }
-    }
-
-    // Search diagnostics
-    for (const [key, diagnostic] of Object.entries(entKnowledgeBase.diagnostics)) {
-        if (lowerQuery.includes(diagnostic.name.toLowerCase()) ||
-            lowerQuery.includes(key.toLowerCase())) {
-            results.diagnostics.push(diagnostic);
-        }
-    }
-
-    return results;
-}
-
-// Function to create context from knowledge base
-function createContext(searchResults) {
-    let context = "RELEVANT ENT KNOWLEDGE BASE INFORMATION:\n\n";
-
-    if (searchResults.diseases.length > 0) {
-        context += "DISEASES/CONDITIONS:\n";
-        searchResults.diseases.forEach(disease => {
-            context += `\n${disease.name} (${disease.category}):\n`;
-            context += `- Symptoms: ${disease.symptoms.join(', ')}\n`;
-            context += `- Causes: ${disease.causes.join(', ')}\n`;
-            context += `- Risk Factors: ${disease.riskFactors.join(', ')}\n`;
-            context += `- Treatment: ${disease.treatment.join(', ')}\n`;
-            context += `- Prevention: ${disease.prevention.join(', ')}\n`;
-        });
-    }
-
-    if (searchResults.medications.length > 0) {
-        context += "\nMEDICATIONS:\n";
-        searchResults.medications.forEach(med => {
-            context += `\n${med.name} (${med.category}):\n`;
-            context += `- Usage: ${med.usage}\n`;
-            context += `- Dosage: ${med.dosage}\n`;
-            context += `- Side Effects: ${med.sideEffects.join(', ')}\n`;
-            context += `- Contraindications: ${med.contraindications.join(', ')}\n`;
-            context += `- Interactions: ${med.interactions.join(', ')}\n`;
-        });
-    }
-
-    if (searchResults.diagnostics.length > 0) {
-        context += "\nDIAGNOSTIC PROCEDURES:\n";
-        searchResults.diagnostics.forEach(diagnostic => {
-            context += `\n${diagnostic.name} (${diagnostic.category}):\n`;
-            context += `- Purpose: ${diagnostic.purpose}\n`;
-            context += `- Preparation: ${diagnostic.preparation}\n`;
-            context += `- Procedure: ${diagnostic.procedure}\n`;
-            context += `- Interpretation: ${diagnostic.interpretation}\n`;
-            context += `- Risks: ${diagnostic.risks}\n`;
-        });
-    }
-
-    return context;
-}
+const MEDICAL_DISCLAIMER = `\n\n***DISCLAIMER: I am an AI assistant and provide information for educational purposes only. This is not medical advice. Always consult with a qualified healthcare professional for definitive diagnosis, treatment, and before making any medical decisions.***`;
 
 // Chat endpoint
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message, history = [] } = req.body;
+        const { message, history = [], geminiKey, groqKey, xaiKey, openRouterKey, provider, model } = req.body;
 
         if (!message) {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        // Search knowledge base for relevant information
-        const searchResults = searchKnowledgeBase(message);
-        const context = createContext(searchResults);
+        // No longer using hardcoded knowledge base search
 
-        // Initialize the model (using gemini-2.0-flash-lite-preview-02-05 for potential quota availability)
-        // If this fails, we catch it below.
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite-preview-02-05" });
+        // Initialize Dynamic Clients
+        const activeGeminiKey = geminiKey || process.env.GEMINI_API_KEY;
+        const activeGroqKey = groqKey || process.env.GROQ_API_KEY;
+        const activeXaiKey = xaiKey || process.env.XAI_API_KEY;
+        const activeOpenRouterKey = openRouterKey || process.env.OPENROUTER_API_KEY;
 
-        // Build conversation history
-        let rawHistory = history.map(msg => ({
-            role: msg.sender === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.content }]
-        }));
+        const dynamicGenAI = activeGeminiKey ? new GoogleGenerativeAI(activeGeminiKey) : null;
+        const dynamicGroq = activeGroqKey ? new Groq({ apiKey: activeGroqKey }) : null;
+        const dynamicXai = activeXaiKey ? new OpenAI({ apiKey: activeXaiKey, baseURL: "https://api.x.ai/v1" }) : null;
+        const dynamicOpenRouter = activeOpenRouterKey ? new OpenAI({
+            apiKey: activeOpenRouterKey,
+            baseURL: "https://openrouter.ai/api/v1",
+            defaultHeaders: {
+                "HTTP-Referer": "http://localhost:3000",
+                "X-Title": "Medical AI Assistant"
+            }
+        }) : null;
 
-        // Robust Sanitization:
-        // 1. Must start with 'user'
-        // 2. Must alternate user/model
-        const sanitizedHistory = [];
-        let expectingRole = 'user';
+        // Determine fallback or specific request
+        const fallbackConfigs = [];
 
-        for (const msg of rawHistory) {
-            if (msg.role === expectingRole) {
-                sanitizedHistory.push(msg);
-                expectingRole = expectingRole === 'user' ? 'model' : 'user';
-            } else if (msg.role === 'user' && expectingRole === 'model') {
-                // We expected model but got user. 
-                // This means two users in a row. We drop the previous user or just skip this one?
-                // Better strategy: If we have multiple users in a row, only keep the last one before a model.
-                // But simpler safety: Reset if sequence breaks, or just ignore invalid ones.
-                // Let's go with: precise alternation required. If we see User-User, we likely missed a Model response.
-                // We'll just reset the chain if we find a User when expecting Model, effectively clearing bad history.
-                // OR simpler: Just take the last valid sequence.
-                // Safest for now: If structure is bad, default to empty history context to prevent crashes.
+        if (provider && model) {
+            // User requested a specific model
+            fallbackConfigs.push({ provider, model });
+        } else {
+            // Default fallback sequence
+            if (dynamicGenAI) {
+                fallbackConfigs.push({ provider: 'gemini', model: 'gemini-2.0-flash' });
+            }
+            if (dynamicGroq) {
+                fallbackConfigs.push({ provider: 'groq', model: 'llama-3.3-70b-versatile' });
+            }
+            if (dynamicXai) {
+                fallbackConfigs.push({ provider: 'xai', model: 'grok-beta' });
+            }
+            if (dynamicOpenRouter) {
+                fallbackConfigs.push({ provider: 'openrouter', model: 'openrouter/auto' });
             }
         }
 
-        // Ensure we end with 'model' (so the next one is 'user' which is the current message we are about to allow?)
-        // Wait, the history passed to startChat should NOT include the *current* new message.
-        // The current new message is passed via sendMessage(enhancedMessage).
-        // So history must end with 'model' if it's not empty.
-
-        // Let's refine: The history sent to startChat must trigger the next turn being User.
-        // So the last item in history MUST be 'model'.
-
-        // Simpler approach: Just filter for alternating starting with User.
-        const validHistory = [];
-        let nextRole = 'user';
-
-        for (const msg of rawHistory) {
-            if (msg.role === nextRole) {
-                validHistory.push(msg);
-                nextRole = nextRole === 'user' ? 'model' : 'user';
-            }
-        }
-
-        // If the last message in history is 'user', we must remove it because the NEXT message (the new query) will be 'user'
-        // and we can't have User -> User.
-        if (validHistory.length > 0 && validHistory[validHistory.length - 1].role === 'user') {
-            validHistory.pop();
-        }
-
-        // Final check: if empty after cleaning, that's fine. 
-        // If not empty, it must start with User.
-        const chatHistory = validHistory;
-
-        // Create chat session
-        const chat = model.startChat({
-            history: chatHistory,
-            generationConfig: {
-                maxOutputTokens: 1000,
-                temperature: 0.7,
-                topP: 0.8,
-                topK: 40,
-            },
-        });
-
-        // Combine system prompt, context, and user message
-        const enhancedMessage = `${SYSTEM_PROMPT}\n\n${context}\n\nUser Question: ${message}\n\nProvide a comprehensive, professional response based on the knowledge base information above. If the information is not in the knowledge base, provide general ENT medical knowledge while noting that specific details should be verified with current medical resources.`;
-
-        // Get AI response
-        const result = await chat.sendMessage(enhancedMessage);
-        const response = await result.response;
-        const text = response.text();
-
-        res.json({
-            response: text,
-            hasKnowledgeBaseData: searchResults.diseases.length > 0 ||
-                searchResults.medications.length > 0 ||
-                searchResults.diagnostics.length > 0
-        });
-
-    } catch (error) {
-        console.error('Error:', error);
-
-        // Check for Rate Limit (429) or Overloaded (503)
-        if (error.message.includes('429') || error.message.includes('Too Many Requests') || error.message.includes('Quota exceeded')) {
-            return res.json({
-                response: "⚠️ **AI Rate Limit Reached**\n\nI'm receiving too many requests right now. Please wait about 30 seconds and try again.\n\n(This is a limitation of the free AI tier)",
-                hasKnowledgeBaseData: false
+        if (fallbackConfigs.length === 0) {
+            return res.status(400).json({
+                error: 'No API keys configured',
+                message: 'Please provide a Gemini or Groq API key in settings or server environment.'
             });
         }
 
-        if (error.message.includes('503') || error.message.includes('Overloaded')) {
+        let lastError = null;
+        let successfulResponse = null;
+
+        for (const config of fallbackConfigs) {
+            try {
+                console.log(`Attempting request with ${config.provider}: ${config.model}`);
+
+                // Build conversation history (common logic)
+                const rawHistory = history.map(msg => ({
+                    role: msg.sender === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.content }], // Gemini format
+                    content: msg.content // Groq format
+                }));
+
+                const validHistory = [];
+                let nextRole = 'user';
+                for (const msg of rawHistory) {
+                    if (msg.role === nextRole) {
+                        validHistory.push(msg);
+                        nextRole = nextRole === 'user' ? 'model' : 'user';
+                    }
+                }
+                if (validHistory.length > 0 && validHistory[validHistory.length - 1].role === 'user') {
+                    validHistory.pop();
+                }
+
+                const isFirstMessage = history.length === 0;
+                let currentSystemPrompt = SYSTEM_PROMPT;
+
+                if (isFirstMessage) {
+                    currentSystemPrompt += `\n\nREQUIRED: You MUST include the following medical disclaimer at the end of your response:\n${MEDICAL_DISCLAIMER}`;
+                } else {
+                    currentSystemPrompt += `\n\nIMPORTANT: Do NOT include a medical disclaimer in this response as it has already been provided in the conversation history.`;
+                }
+
+                let text = "";
+
+                if (config.provider === 'gemini') {
+                    if (!dynamicGenAI) throw new Error('Gemini API key not provided');
+                    const model = dynamicGenAI.getGenerativeModel({ model: config.model });
+                    const chat = model.startChat({
+                        history: validHistory.map(h => ({ role: h.role, parts: h.parts })),
+                        generationConfig: { maxOutputTokens: 4096, temperature: 0.7 }
+                    });
+                    const enhancedMessage = `${currentSystemPrompt}\n\nUser Question: ${message}\n\nProvide a high-quality, very detailed, and comprehensive professional response.`;
+                    const result = await chat.sendMessage(enhancedMessage);
+                    const response = await result.response;
+                    text = response.text();
+                } else if (config.provider === 'groq') {
+                    if (!dynamicGroq) throw new Error('Groq API key not provided');
+                    const chatCompletion = await dynamicGroq.chat.completions.create({
+                        messages: [
+                            { role: "system", content: currentSystemPrompt },
+                            ...validHistory.map(h => ({ role: h.role === 'model' ? 'assistant' : 'user', content: h.content })),
+                            { role: "user", content: message }
+                        ],
+                        model: config.model,
+                        temperature: 0.7,
+                        max_tokens: 4096,
+                    });
+                    text = chatCompletion.choices[0]?.message?.content || "";
+                } else if (config.provider === 'xai' || config.provider === 'openrouter') {
+                    const client = config.provider === 'xai' ? dynamicXai : dynamicOpenRouter;
+                    if (!client) throw new Error(`${config.provider} API key not provided`);
+                    const chatCompletion = await client.chat.completions.create({
+                        messages: [
+                            { role: "system", content: currentSystemPrompt },
+                            ...validHistory.map(h => ({ role: h.role === 'model' ? 'assistant' : 'user', content: h.content })),
+                            { role: "user", content: message }
+                        ],
+                        model: config.model,
+                        temperature: 0.7,
+                        max_tokens: 4096,
+                    });
+                    text = chatCompletion.choices[0]?.message?.content || "";
+                }
+
+                successfulResponse = {
+                    text: text,
+                    model: config.model,
+                    provider: config.provider
+                };
+                break; // Success!
+            } catch (err) {
+                console.warn(`${config.provider} model ${config.model} failed:`, err.message);
+                lastError = err;
+                // Move to next if it's a quota/rate limit/transient error
+                const errorStr = err.message.toLowerCase();
+                if (errorStr.includes('429') || errorStr.includes('limit') || errorStr.includes('quota') || errorStr.includes('503') || errorStr.includes('404')) {
+                    continue;
+                }
+                throw err;
+            }
+        }
+
+        if (successfulResponse) {
             return res.json({
-                response: "⚠️ **AI Service Overloaded**\n\nThe AI service is currently busy. Please try again in a moment.",
-                hasKnowledgeBaseData: false
+                response: successfulResponse.text,
+                modelUsed: successfulResponse.model,
+                providerUsed: successfulResponse.provider,
+                hasKnowledgeBaseData: false // No longer using static KB
+            });
+        }
+
+        throw lastError; // If all models failed
+
+    } catch (error) {
+        console.error('Final Error Handler:', error);
+
+        const isQuota = error.message.includes('429') || error.message.includes('Too Many Requests') || error.message.includes('Quota exceeded');
+        const isOverloaded = error.message.includes('503') || error.message.includes('Overloaded');
+
+        if (isQuota) {
+            return res.status(429).json({
+                error: 'AI Rate Limit Reached',
+                message: "I'm receiving too many requests or your API quota is exceeded. Please wait a moment or check your Google AI Studio quota.",
+                details: error.message,
+                isTransient: true
+            });
+        }
+
+        if (isOverloaded) {
+            return res.status(503).json({
+                error: 'AI Service Overloaded',
+                message: "The AI service is currently busy. Please try again in a moment.",
+                details: error.message,
+                isTransient: true
             });
         }
 
         res.status(500).json({
             error: 'Failed to process request',
+            message: "An unexpected error occurred while communicating with the AI.",
             details: error.message
         });
     }
@@ -247,8 +247,14 @@ app.post('/api/chat', async (req, res) => {
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'ok',
-        message: 'ENT AI Chatbot Server is running',
-        geminiConfigured: !!process.env.GEMINI_API_KEY
+        message: 'Medical AI Chatbot Server is running (Strict Frontend Key Mode)',
+        providersConfigured: {
+            gemini: !!process.env.GEMINI_API_KEY,
+            groq: !!process.env.GROQ_API_KEY,
+            xai: !!process.env.XAI_API_KEY,
+            openrouter: !!process.env.OPENROUTER_API_KEY
+        },
+        note: "Server-side keys are for internal fallbacks only if enabled. Current policy is Frontend-Only."
     });
 });
 
@@ -259,7 +265,7 @@ app.get('/', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🏥 ENT AI Chatbot Server running on http://localhost:${PORT}`);
+    console.log(`🏥 Medical AI Chatbot Server running on http://localhost:${PORT}`);
     console.log(`📊 API Health: http://localhost:${PORT}/api/health`);
 
     if (!process.env.GEMINI_API_KEY) {
