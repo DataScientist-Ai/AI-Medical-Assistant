@@ -1,8 +1,8 @@
-# 🚀 Quick Start Guide - AI ENT Chatbot
+# 🚀 Quick Start Guide - Universal AI Medical Assistant
 
 ## ✅ Setup Complete!
 
-Your AI-powered ENT Medical Chatbot is almost ready to use!
+Your AI-powered Universal Medical Chatbot is almost ready to use!
 
 ---
 
@@ -54,12 +54,12 @@ http://localhost:3000
 
 Once the chatbot is running, try asking:
 
-- "Tell me about otitis media"
-- "What is amoxicillin used for?"
-- "How does audiometry work?"
-- "Show me all ear conditions"
-- "Explain the symptoms of sinusitis"
-- "What are the side effects of fluticasone?"
+- "Tell me about managing Type 2 Diabetes"
+- "What are the common side effects of Metformin?"
+- "Explain how an MRI works"
+- "What are the symptoms of a sinus infection?"
+- "Give me a summary of hypertension guidelines 2024"
+- "How does the heart's conduction system work?"
 
 ---
 
@@ -111,22 +111,8 @@ Should return:
 
 ---
 
-## 📚 Knowledge Base Includes
-
-### 👂 Ear Conditions
-Otitis Media, Tinnitus, Hearing Loss, Vertigo, Meniere's Disease, and more
-
-### 👃 Nose Conditions
-Sinusitis, Allergic Rhinitis, Nasal Polyps, Deviated Septum, and more
-
-### 🗣️ Throat Conditions
-Tonsillitis, Strep Throat, Laryngitis, Sleep Apnea, GERD, and more
-
-### 💊 Medications
-Antibiotics, Decongestants, Corticosteroids, Antihistamines, Ear Drops
-
-### 🔬 Diagnostics
-Otoscopy, Audiometry, Laryngoscopy, CT/MRI Scans, Allergy Testing, and more
+### 🏥 Medical Knowledge Coverage
+The assistant provides comprehensive information across all major medical domains including Ear, Nose & Throat, Cardiology, Neurology, Pediatrics, Pharmacology, and Diagnostic Imaging.
 
 ---
 

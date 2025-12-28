@@ -265,7 +265,7 @@ app.get('/', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🏥 Medical AI Chatbot Server running on http://localhost:${PORT}`);
+    console.log(`🏥 Universal AI Medical Assistant Server running on http://localhost:${PORT}`);
     console.log(`📊 API Health: http://localhost:${PORT}/api/health`);
 
     if (!process.env.GEMINI_API_KEY) {

@@ -1,6 +1,6 @@
-# 🏥 AI-Powered ENT Medical Chatbot
+# 🏥 Universal AI-Powered Medical Assistant
 
- An intelligent medical assistant powered by multiple AI providers (Gemini, Groq, Grok, OpenRouter) providing comprehensive health information.
+An intelligent multi-provider medical assistant capable of answering questions across all medical specialities, powered by state-of-the-art AI models including Gemini 2.0, Groq (Llama 3.3), Grok, and OpenRouter.
 
 ## ✨ Features
 
@@ -99,53 +99,14 @@ PORT=3000
   }
   ```
 
-## 📚 Knowledge Base
+## 📚 Global Medical Knowledge
+The assistant leverages the vast medical knowledge of multiple world-class AI models, providing information on:
 
-The chatbot includes comprehensive information about:
-
-### Ear Conditions (8)
-- Otitis Media
-- Otitis Externa (Swimmer's Ear)
-- Tinnitus
-- Hearing Loss
-- Vertigo
-- Meniere's Disease
-- Eustachian Tube Dysfunction
-- Perforated Eardrum
-
-### Nose Conditions (5)
-- Sinusitis
-- Allergic Rhinitis (Hay Fever)
-- Nasal Polyps
-- Deviated Septum
-- Epistaxis (Nosebleeds)
-
-### Throat Conditions (7)
-- Tonsillitis
-- Strep Throat
-- Laryngitis
-- Sleep Apnea
-- GERD/Laryngopharyngeal Reflux
-- Voice Disorders
-- Pharyngitis
-
-### Medications (20+)
-- Antibiotics (Amoxicillin, Penicillin, etc.)
-- Decongestants (Oral & Topical)
-- Nasal Corticosteroids
-- Antihistamines
-- Ear Drops
-
-### Diagnostic Procedures (12)
-- Otoscopy
-- Laryngoscopy
-- Audiometry
-- Tympanometry
-- Nasal Endoscopy
-- CT/MRI Scans
-- Allergy Testing
-- Balance Testing
-- And more...
+- **General Medicine**: Common illnesses, chronic conditions, and wellness.
+- **Specialized Fields**: ENT, Cardiology, Dermatology, Neurology, and more.
+- **Medications**: Detailed information on usage, side effects, and dosages.
+- **Diagnostics**: Explanations of lab tests, imaging, and procedures.
+- **Global Health**: Real-time data and evidence-based medical research.
 
 ## 💡 Usage Examples
 
