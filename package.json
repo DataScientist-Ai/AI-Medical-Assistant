@@ -1,18 +1,21 @@
 {
-  "name": "ent-ai-chatbot",
+  "name": "ai-medical-assistant",
   "version": "1.0.0",
-  "description": "AI-powered ENT Medical Chatbot using Google Gemini",
+  "description": "Universal AI-powered Medical Assistant",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "keywords": [
-    "ent",
     "medical",
+    "assistant",
     "chatbot",
     "ai",
-    "gemini"
+    "gemini",
+    "groq",
+    "grok",
+    "openrouter"
   ],
   "author": "",
   "license": "MIT",

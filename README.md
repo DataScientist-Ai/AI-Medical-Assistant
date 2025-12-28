@@ -59,7 +59,6 @@ chatbot/
 ├── styles.css          # Styling and animations
 ├── script.js           # Frontend JavaScript (AI integration)
 ├── server.js           # Express backend server
-├── knowledge-base.js   # ENT medical knowledge base
 ├── package.json        # Dependencies
 ├── .env                # Environment variables (create this)
 ├── .env.example        # Environment template
@@ -94,8 +93,8 @@ PORT=3000
   ```json
   {
     "status": "ok",
-    "message": "ENT AI Chatbot Server is running",
-    "geminiConfigured": true
+    "message": "Medical AI Assistant Server is running",
+    "providersConfigured": { ... }
   }
   ```
 
@@ -156,7 +155,7 @@ Edit the `SYSTEM_PROMPT` in `server.js` to customize the AI's personality and re
 
 ### Update Knowledge Base
 
-Edit `knowledge-base.js` to add or modify medical information.
+The AI provides information across all medical specialities from cardiology to neurology. Customize the `SYSTEM_PROMPT` in `server.js` to adjust expertise.
 
 ### Styling
 

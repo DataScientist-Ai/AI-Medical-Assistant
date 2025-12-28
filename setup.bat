@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo   ENT AI Chatbot - Setup Script
+echo   AI Medical Assistant - Setup Script
 echo ========================================
 echo.
 
@@ -33,13 +33,10 @@ echo ========================================
 echo   IMPORTANT: Configure your API Key
 echo ========================================
 echo.
-echo 1. Get your FREE Google Gemini API key:
-echo    https://makersuite.google.com/app/apikey
+echo 1. Get your API Keys (Gemini, Groq, xAI, etc.)
 echo.
-echo 2. Open .env file in a text editor
-echo.
-echo 3. Replace the empty GEMINI_API_KEY value with your actual key
-echo    Example: GEMINI_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+echo 2. Run the application and Add your keys in the Settings (⚙️) menu.
+echo    Your keys are stored only in your local browser.
 echo.
 echo 4. Save the file
 echo.

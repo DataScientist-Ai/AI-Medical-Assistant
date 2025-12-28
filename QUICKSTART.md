@@ -37,7 +37,7 @@ npm start
 
 You should see:
 ```
-🏥 ENT AI Chatbot Server running on http://localhost:3000
+🏥 AI Medical Assistant Server running on http://localhost:3000
 📊 API Health: http://localhost:3000/api/health
 ```
 
@@ -94,8 +94,8 @@ Should return:
 ```json
 {
   "status": "ok",
-  "message": "ENT AI Chatbot Server is running",
-  "geminiConfigured": true
+  "message": "Medical AI Assistant Server is running",
+  "providersConfigured": { ... }
 }
 ```
 

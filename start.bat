@@ -1,10 +1,10 @@
 @echo off
-title ENT AI Chatbot Server
+title AI Medical Assistant Server
 color 0A
 
 echo.
 echo ========================================
-echo    🏥 ENT AI Medical Chatbot
+echo    🏥 AI Medical Assistant
 echo ========================================
 echo.
 echo Starting server...
@@ -29,7 +29,7 @@ if not exist node_modules (
 )
 
 REM Start the server
-echo ✅ Starting ENT AI Chatbot Server...
+echo ✅ Starting AI Medical Assistant Server...
 echo.
 echo 📍 Server will be available at: http://localhost:3000
 echo 🔧 Press Ctrl+C to stop the server
